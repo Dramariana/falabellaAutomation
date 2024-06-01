@@ -1,19 +1,35 @@
-plugins {
-    id 'java'
+defaultTasks 'clean','test','aggregate'
+apply plugin: 'java'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:3.1.1")
+    }
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+apply plugin: 'net.serenity-bdd.aggregator'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    testImplementation 'net.serenity-bdd:serenity-core:3.6.12'
+    testImplementation 'net.serenity-bdd:serenity-junit:3.6.12'
+    implementation 'net.serenity-bdd:serenity-cucumber:3.6.12'
+    implementation "net.serenity-bdd:serenity-screenplay-webdriver:3.1.12"
+    implementation 'net.serenity-bdd:serenity-screenplay:3.6.12'
+    testImplementation 'io.cucumber:cucumber-java:7.10.1'
+    testImplementation 'io.cucumber:cucumber-junit:7.10.1'
+    implementation 'org.slf4j:slf4j-nop:1.7.30'
+    testImplementation 'io.github.bonigarcia:webdrivermanager:4.4.3'
 }
 
-test {
-    useJUnitPlatform()
-}
