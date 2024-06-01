@@ -12,9 +12,11 @@ import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.actions.Open;
 import net.thucydides.core.annotations.Managed;
 
+import static co.com.falabella.userinterfaces.FalabellaCatalogPage.TOTAL_SHOPPING_CART;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -32,7 +34,8 @@ public class FalabellaAutomationStepdefinition {
     List<Product> productShoppingCart;
     List<Float> productShoppingCartPrices;
     List<Product> productShoppingCartVerification;
-    List<Float> productShoppingCartVerificationPrices;
+
+    Product productTotal = new Product();
     @Managed(driver = "firefox", uniqueSession = true)
     public WebDriver hisBrowser;
 
@@ -45,7 +48,7 @@ public class FalabellaAutomationStepdefinition {
         user.can(BrowseTheWeb.with(hisBrowser));
         hisBrowser.manage().window().maximize();
         FirefoxProfile profile = new FirefoxProfile();
-        // Configurar el perfil según sea necesario
+
         FirefoxOptions options = new FirefoxOptions().setProfile(profile);
         options.setAcceptInsecureCerts(true);
     }
@@ -67,18 +70,22 @@ public class FalabellaAutomationStepdefinition {
         productShoppingCart = new ArrayList<Product>();
         productShoppingCartVerification = new ArrayList<Product>();
         productShoppingCartPrices = new ArrayList<Float>();
-        productShoppingCartVerificationPrices = new ArrayList<Float>();
-        user.attemptsTo(SelectProduct.randomly(productShoppingCart, productShoppingCartPrices));
-        user.attemptsTo(SelectShoppingCart.view(productShoppingCartVerification, productShoppingCartVerificationPrices));
+        user.attemptsTo(SelectProduct.randomly(productShoppingCart));
+        user.attemptsTo(SelectShoppingCart.view(productShoppingCartVerification));
 
-        assertThat(productShoppingCartVerification, containsInAnyOrder(productShoppingCart.toArray()));
-        Product productTotal = new Product();
-        productTotal.Total(productShoppingCartVerification);
+        // assertThat(productShoppingCartVerification, containsInAnyOrder(productShoppingCart.toArray()));
+        Assert.assertTrue(productTotal.compareList(productShoppingCart, productShoppingCartVerification));
+        // productTotal.Total(productShoppingCartVerification);
+
+
     }
 
     @Then("user sees the total value of his purchase")
     public void userSeesTheTotalValueOfHisPurchase() {
-        // Write code here that turns the phrase above into concrete actions
+
+        System.out.println("resultado calculo:"+String.valueOf(productTotal.Total(productShoppingCartVerification)));
+        assertThat(String.valueOf(productTotal.Total(productShoppingCartVerification)), equalTo(TOTAL_SHOPPING_CART.resolveFor(user).getText().replace(".","")));
+
         throw new io.cucumber.java.PendingException();
     }
 

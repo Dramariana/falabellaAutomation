@@ -20,4 +20,6 @@ public class FalabellaCatalogPage extends PageObject {
 
     public static final Target PRODUCT_SIZE = Target.the("product_size").located(By.xpath("//button[contains(@id, 'testId-sizeButton')]"));
     public static final Target PRODUCT_STOCK = Target.the("product_stock").located(By.xpath("//*[@class= 'jsx-4205635298 max-units-text']"));
+    public static final Target TOTAL_SHOPPING_CART = Target.the("total_shopping_cart").located(By.xpath("//*[@class='chakra-text css-1nq5gzm'][contains(text(), '$')]"));
+
 }

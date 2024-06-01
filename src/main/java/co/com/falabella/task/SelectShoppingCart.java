@@ -16,18 +16,17 @@ import static net.serenitybdd.screenplay.Tasks.instrumented;
 
 public class SelectShoppingCart implements Task {
     List<Product> productShoppingCartVerification;
-    List<Float> productShoppingCartVerificationPrices;
 
-    public SelectShoppingCart(List<Product> productShoppingCartVerification, List<Float> productShoppingCartVerificationPrices) {
+    public SelectShoppingCart(List<Product> productShoppingCartVerification) {
 
         this.productShoppingCartVerification = productShoppingCartVerification;
-        this.productShoppingCartVerificationPrices = productShoppingCartVerificationPrices;
+
     }
 
     @Override
     public <T extends Actor> void performAs(T actor) {
         int quantity;
-        float price;
+        int price;
         actor.attemptsTo(
                 Click.on(SHOPPING_CART)
         );
@@ -38,14 +37,14 @@ public class SelectShoppingCart implements Task {
 
         for (int i = 0; i < productCartListName.size(); i++) {
             quantity = Integer.valueOf(productCartListQuantity.get(i).getValue());
-            price = Float.parseFloat(productCartListPrice.get(i).getText().replace("$", "").replace(".", "").replace(" ", ""));
-            productShoppingCartVerification.add(new Product(productCartListName.get(i).getText(), quantity));
-            productShoppingCartVerificationPrices.add(price * quantity);
+            price = Integer.parseInt(productCartListPrice.get(i).getText().replace("$", "").replace(".", "").replace(" ", ""));
+            productShoppingCartVerification.add(new Product(productCartListName.get(i).getText(), quantity,price));
+
         }
     }
 
-    public static SelectShoppingCart view(List<Product> productShoppingCartVerification, List<Float> productShoppingCartVerificationPrices) {
-        return instrumented(SelectShoppingCart.class, productShoppingCartVerification, productShoppingCartVerificationPrices);
+    public static SelectShoppingCart view(List<Product> productShoppingCartVerification) {
+        return instrumented(SelectShoppingCart.class, productShoppingCartVerification);
 
     }
 }

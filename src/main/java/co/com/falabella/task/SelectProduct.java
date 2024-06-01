@@ -21,12 +21,10 @@ public class
 SelectProduct implements Task {
     Random random = new Random();
     List<Product> productShoppingCart;
-    List<Float> productShoppingCartPrices;
-    Float price;
+    int price;
 
-    public SelectProduct(List<Product> productShoppingCart, List<Float> productShoppingCartPrices) {
+    public SelectProduct(List<Product> productShoppingCart) {
         this.productShoppingCart = productShoppingCart;
-        this.productShoppingCartPrices = productShoppingCartPrices;
     }
 
     @Override
@@ -38,12 +36,14 @@ SelectProduct implements Task {
         List<WebElementFacade> pricesList = CATALOG_PRICE.resolveAllFor(actor);
         List<WebElementFacade> buttonList = BUTTON_ADD_CART.resolveAllFor(actor);
 
-
+        System.out.println("tamaño catalogo:"+productList.size());
         for (int i = 0; i < 3; i++) {
 
-            randomNumber = random.nextInt(productList.size());
+            //randomNumber = random.nextInt(productList.size());
+            randomNumber = (int) (Math.random()*productList.size());
+            System.out.println("random:"+randomNumber);
             //randomQuantity = random.nextInt(5) + 1;
-            price = Float.parseFloat(pricesList.get(randomNumber).getText().replace("$", "").replace(".", "").replace(" ", ""));
+            price = Integer.parseInt(pricesList.get(randomNumber).getText().replace("$", "").replace(".", "").replace(" ", ""));
             actor.attemptsTo(
                     Scroll.to(productList.get(randomNumber)),
                     HoverOverElement.over(buttonList.get(randomNumber)),
@@ -66,8 +66,8 @@ SelectProduct implements Task {
                 } else {
                     randomQuantity = random.nextInt(stock) + 1;
                 }
-                productShoppingCart.add(new Product(productList.get(randomNumber).getText(), randomQuantity));
-                productShoppingCartPrices.add(price * randomQuantity);
+                productShoppingCart.add(new Product(productList.get(randomNumber).getText(), randomQuantity, price));
+
                 actor.attemptsTo(
                         WaitUntil.the(DENY_PRECART, isVisible()).forNoMoreThan(5).seconds(),
                         SendKeys.of(Keys.BACK_SPACE).into(PRODUCT_QUANTITY),
@@ -75,26 +75,26 @@ SelectProduct implements Task {
                         Click.on(PRE_SHOPPING_CART)
                 );
             } else {
-                productShoppingCart.add(new Product(productList.get(randomNumber).getText(), 1));
-                productShoppingCartPrices.add(price);
+                productShoppingCart.add(new Product(productList.get(randomNumber).getText(), 1, price));
+
             }
             if (ADD_CART.waitingForNoMoreThan(Duration.ofSeconds(5)).isVisibleFor(actor)) {
                 actor.attemptsTo(
                         Click.on(ADD_CART));
             }
-            if (DENY_PRECART.waitingForNoMoreThan(Duration.ofSeconds(5)).isVisibleFor(actor)) {
-                actor.attemptsTo(
-                        WaitUntil.the(DENY_PRECART, isClickable()).forNoMoreThan(5).seconds(),
-                        JavaScriptClick.on(DENY_PRECART),
-                        WaitUntil.the(DENY_PRECART, isNotVisible()).forNoMoreThan(5).seconds()
-                );
-            }
+
+            actor.attemptsTo(
+                    WaitUntil.the(DENY_PRECART, isClickable()).forNoMoreThan(5).seconds(),
+                    JavaScriptClick.on(DENY_PRECART),
+                    WaitUntil.the(DENY_PRECART, isNotVisible()).forNoMoreThan(5).seconds()
+            );
+
         }
 
     }
 
-    public static SelectProduct randomly(List<Product> productShoppingCart, List<Float> productShoppingCartPrices) {
-        return instrumented(SelectProduct.class, productShoppingCart, productShoppingCartPrices);
+    public static SelectProduct randomly(List<Product> productShoppingCart) {
+        return instrumented(SelectProduct.class, productShoppingCart);
 
     }
 }
